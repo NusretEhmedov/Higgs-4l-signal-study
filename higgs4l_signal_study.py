@@ -5,9 +5,8 @@
 # This file is simulated SIGNAL only (no background, no real data), so this is not a discovery.
 # The script builds the full reconstruction chain and measures what the detector does to a
 # 125 GeV Higgs: selection efficiency, mass resolution and tails, per decay channel.
-# Run it from inside this folder, with the data file in data/.
 
-# %% 1. Imports and settings
+# 1. Imports and settings
 import os
 import numpy as np
 import awkward as ak
@@ -27,7 +26,7 @@ Z_MASS = 91.1876                    # GeV
 MU_MASS, EL_MASS = 0.10566, 0.000511  # GeV
 report = []                         # lines collected here are printed and saved at the end
 
-# %% 2. Load only the branches we need
+# 2. Load only the branches we need
 branches = [
     "Muon_pt", "Muon_eta", "Muon_phi", "Muon_charge", "Muon_pfRelIso04_all",
     "Muon_dxy", "Muon_dxyErr", "Muon_dz", "Muon_dzErr",
@@ -38,7 +37,7 @@ ev = uproot.open("data/SMHiggsToZZTo4L.root")["Events"].arrays(branches)
 n_total = len(ev)
 report.append(f"Events in file: {n_total}")
 
-# %% 3. Select good leptons (quality cuts on each lepton)
+# 3. Select good leptons (quality cuts on each lepton)
 # SIP is a proxy for the 3D impact-parameter significance: sqrt((dxy/err)^2 + (dz/err)^2)
 mu_sip = np.sqrt((ev.Muon_dxy / ev.Muon_dxyErr) ** 2 + (ev.Muon_dz / ev.Muon_dzErr) ** 2)
 el_sip = np.sqrt((ev.Electron_dxy / ev.Electron_dxyErr) ** 2 + (ev.Electron_dz / ev.Electron_dzErr) ** 2)
@@ -48,7 +47,7 @@ good_mu = ((ev.Muon_pt > 5) & (abs(ev.Muon_eta) < 2.4) & (ev.Muon_pfRelIso04_all
 good_el = ((ev.Electron_pt > 7) & (abs(ev.Electron_eta) < 2.5) & (ev.Electron_pfRelIso03_all < 0.4)
            & (abs(ev.Electron_dxy) < 0.5) & (abs(ev.Electron_dz) < 1.0) & (el_sip < 4))
 
-# %% 4. Keep events with exactly 4 good leptons and turn them into plain (n_events, 4) arrays
+# 4. Keep events with exactly 4 good leptons and turn them into plain (n_events, 4) arrays
 n_leptons = ak.num(ev.Muon_pt[good_mu]) + ak.num(ev.Electron_pt[good_el])
 has_four = ak.to_numpy(n_leptons == 4)
 
@@ -64,7 +63,7 @@ order = np.argsort(-pt, axis=1)                      # sort leptons by pT, highe
 pt, eta, phi, charge, is_muon = (np.take_along_axis(x, order, axis=1) for x in (pt, eta, phi, charge, is_muon))
 report.append(f"Events with exactly 4 good leptons: {len(pt)}")
 
-# %% 5. Four-vectors of every lepton
+# 5. Four-vectors of every lepton
 mass = np.where(is_muon == 1, MU_MASS, EL_MASS)
 px, py, pz = pt * np.cos(phi), pt * np.sin(phi), pt * np.sinh(eta)
 energy = np.sqrt(px**2 + py**2 + pz**2 + mass**2)
@@ -73,7 +72,7 @@ m4l = np.sqrt(np.maximum(energy.sum(1) ** 2 - px.sum(1) ** 2 - py.sum(1) ** 2 - 
 n_mu = is_muon.sum(axis=1)
 channel = np.select([n_mu == 4, n_mu == 0, n_mu == 2], ["4mu", "4e", "2e2mu"], "other")
 
-# %% 6. Find the best Z1/Z2 pairing
+# 6. Find the best Z1/Z2 pairing
 # Four leptons can be paired three ways. A valid pairing has two opposite-sign, same-flavour pairs.
 # Z1 is the pair whose mass is closest to the Z mass; the best pairing is the one with the best Z1.
 pairings = [((0, 1), (2, 3)), ((0, 2), (1, 3)), ((0, 3), (1, 2))]
@@ -95,7 +94,7 @@ for (a, b), (c, d) in pairings:
     z1[better], z2[better] = this_z1[better], this_z2[better]
     best_distance[better] = abs(this_z1[better] - Z_MASS)
 
-# %% 7. Event selection with a cutflow
+# 7. Event selection with a cutflow
 has_pairing = ~np.isnan(z1)
 cut_pt = (pt[:, 0] > 20) & (pt[:, 1] > 10)
 cut_z1 = (z1 > 40) & (z1 < 120)
@@ -123,7 +122,7 @@ for ch in ["4mu", "4e", "2e2mu"]:
 report.append(f"  total  {selected.sum():6d}   {100 * selected.sum() / n_total:5.2f} %")
 report.append("  (denominator = events in this reduced file, not generated events: not an absolute acceptance x efficiency)")
 
-# %% 8. Fit the 4-lepton mass peak in each channel with a Crystal Ball function
+# 8. Fit the 4-lepton mass peak in each channel with a Crystal Ball function
 # Crystal Ball = Gaussian core + power-law tail on the low-mass side (energy lost to radiation).
 low, high, n_bins = 105.0, 140.0, 70
 crystal_ball = lambda x, norm, beta, m, loc, scale: norm * crystalball.pdf(x, beta, m, loc=loc, scale=scale)
@@ -144,7 +143,7 @@ for ch in ["4mu", "4e", "2e2mu"]:
     fits[ch] = (centres, counts, errors, popt)
     report.append(f"  {ch:6s} peak = {popt[3]:.2f} +/- {perr[3]:.2f} GeV    sigma = {popt[4]:.2f} +/- {perr[4]:.2f} GeV")
 
-# %% 9. Resolution vs detector region
+# 9. Resolution vs detector region
 # Is the mass resolution worse when leptons are in the endcap (|eta| > 1.5)?
 # sigma68 = half the width of the central 68% interval (robust against tails).
 n_endcap = (abs(eta) > 1.5).sum(axis=1)
@@ -157,7 +156,7 @@ for ch in ["4mu", "4e", "2e2mu"]:
         lo68, hi68 = np.percentile(m4l[sel], [15.87, 84.13])
         report.append(f"  {ch:6s} {label:11s} N={sel.sum():5d}   sigma68 = {(hi68 - lo68) / 2:.2f} GeV")
 
-# %% 10. Plots
+# 10. Plots
 fig, axs = plt.subplots(1, 3, figsize=(16, 4.8))
 for ax, ch in zip(axs, ["4mu", "4e", "2e2mu"]):
     centres, counts, errors, popt = fits[ch]
@@ -183,7 +182,7 @@ ax.set_xlabel("m(Z1) [GeV]")
 ax.set_ylabel("m(Z2) [GeV]")
 fig.savefig("results/z1_vs_z2.png", dpi=200, bbox_inches="tight")
 
-# %% 11. Save the text summary
+# 11. Save the text summary
 print("\n".join(report))
 with open("results/summary.txt", "w") as f:
     f.write("\n".join(report))
