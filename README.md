@@ -39,3 +39,5 @@ Outputs go to `results/`. See `data/README.md` for the data file.
 ## Data and citation
 - Wunsch, S. (2021). *SMHiggsToZZTo4L dataset in reduced NanoAOD format for education and outreach*. CERN Open Data Portal. DOI: [10.7483/OPENDATA.CMS.8FLU.UIQJ](https://doi.org/10.7483/OPENDATA.CMS.8FLU.UIQJ)
 - Related official analysis (not reused here): Wunsch, S. (2021). *Analysis of Higgs boson decays to four leptons ... using ROOT's RDataFrame*. DOI: [10.7483/OPENDATA.CMS.F7HD.P3K4](https://doi.org/10.7483/OPENDATA.CMS.F7HD.P3K4)
+- The data are CMS Open Data released under CC0 1.0 (public domain waiver). DOI: 10.7483/OPENDATA.CMS.8FLU.UIQJ .Data link: https://opendata.cern.ch/record/12361
+- This is an independent educational analysis; neither CMS nor CERN endorses it.
