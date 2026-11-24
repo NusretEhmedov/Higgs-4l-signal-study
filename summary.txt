@@ -1,0 +1,33 @@
+Events in file: 299973
+Events with exactly 4 good leptons: 39981
+
+Cutflow (events with 4 good leptons):
+  4 good leptons               39981
+  OS same-flavour pairing      36920
+  pT(1)>20, pT(2)>10           36684
+  40 < m(Z1) < 120             36293
+  12 < m(Z2) < 120             33385
+  m4l > 70                     33378
+
+Selection efficiency by channel (fraction of ALL events stored in the file):
+  4mu     10588    3.53 %
+  4e       7162    2.39 %
+  2e2mu   15628    5.21 %
+  total   33378   11.13 %
+  (denominator = events in this reduced file, not generated events: not an absolute acceptance x efficiency)
+
+Crystal Ball fit of the m4l peak:
+  4mu    peak = 124.82 +/- 0.02 GeV    sigma = 1.23 +/- 0.01 GeV
+  4e     peak = 125.29 +/- 0.06 GeV    sigma = 2.94 +/- 0.05 GeV
+  2e2mu  peak = 125.14 +/- 0.03 GeV    sigma = 2.12 +/- 0.02 GeV
+
+Mass resolution (sigma68) by number of endcap leptons:
+  4mu    0 endcap    N= 5217   sigma68 = 1.49 GeV
+  4mu    1 endcap    N= 3284   sigma68 = 1.59 GeV
+  4mu    >=2 endcap  N= 1970   sigma68 = 1.85 GeV
+  4e     0 endcap    N= 3742   sigma68 = 2.96 GeV
+  4e     1 endcap    N= 1877   sigma68 = 4.31 GeV
+  4e     >=2 endcap  N= 1234   sigma68 = 4.45 GeV
+  2e2mu  0 endcap    N= 7892   sigma68 = 2.35 GeV
+  2e2mu  1 endcap    N= 4372   sigma68 = 3.12 GeV
+  2e2mu  >=2 endcap  N= 2887   sigma68 = 3.33 GeV
